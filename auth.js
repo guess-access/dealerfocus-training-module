@@ -232,12 +232,16 @@
   }
 
   function guardHTML() {
+    // Login is the entry pass: everything except the public landing pages requires a session.
     var me = currentUser();
     var file = (location.pathname.split("/").pop() || "index.html").toLowerCase();
     var adminPages = ["admin-dashboard.html", "admin.html"];
     var userPages = ["user-dashboard.html", "dashboard.html", "my-progress.html"];
+    var publicPages = ["", "index.html", "about-us.html", "login.html"];
     if (adminPages.indexOf(file) >= 0 && (!me || me.role !== "admin")) { location.href = "login.html?next=" + encodeURIComponent(file); return; }
     if (userPages.indexOf(file) >= 0 && !me) { location.href = "login.html?next=" + encodeURIComponent(file); return; }
+    if (publicPages.indexOf(file) >= 0) return; // Home / About / Login stay public
+    if (!me) { location.href = "login.html?next=" + encodeURIComponent(file); return; } // modules, sandbox, trainings, certification
   }
 
   function navHTML() {
