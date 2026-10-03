@@ -57,7 +57,8 @@ document.addEventListener('df:ready',function(){
   document.getElementById('rows').innerHTML=at.length?at.slice().reverse().map(function(a){
     return '<tr><td>'+new Date(a.at).toLocaleString()+'</td><td>'+DFAuth.esc(a.quiz)+'</td><td>'+a.score+'%</td><td><span class="badge '+(a.passed?'pass':'fail')+'">'+(a.passed?'Passed':'Not passed')+'</span></td></tr>';
   }).join(''):'<tr><td colspan="4">No attempts yet.</td></tr>';
-  document.getElementById('usage').textContent='Logins: '+us.logins.length+' • Page views tracked: '+us.views.length+' • Last views: '+(us.views.slice(-5).map(function(v){return v.page;}).join(', ')||'—');
+  var dwellMin = us.dwell ? Math.round(Object.keys(us.dwell).reduce(function(s,k){return s+us.dwell[k];},0)/60) : 0;
+  document.getElementById('usage').textContent='Logins: '+us.logins.length+' • Time in training: ~'+dwellMin+' min • Page views: '+us.views.length+' • Last views: '+(us.views.slice(-5).map(function(v){return v.page;}).join(', ')||'—');
 });
 </script>
 </body>

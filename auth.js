@@ -148,6 +148,14 @@
     saveUsers(users);
   }
 
+  function logDwell(page, sec) {
+    var m = currentUser(); if (!m) return;
+    var u = getUsage(m.id);
+    u.dwell = u.dwell || {};
+    u.dwell[page] = (u.dwell[page] || 0) + sec;
+    saveJSON(usageKey(m.id), u);
+  }
+
   function markModule(id, done) {
     var me = currentUser(); if (!me) return;
     var p = getProgress(me.id);
@@ -274,7 +282,7 @@
 
   window.DFAuth = {
     seed: seed, signup: signup, login: login, logout: logout, current: currentUser,
-    trackView: trackView, markModule: markModule, logQuiz: logQuiz,
+    trackView: trackView, markModule: markModule, logQuiz: logQuiz, logDwell: logDwell,
     getProgress: function () { var me = currentUser(); return me ? getProgress(me.id) : null; },
     getAttempts: function () { var me = currentUser(); return me ? getAttempts(me.id) : null; },
     getUsage: function () { var me = currentUser(); return me ? getUsage(me.id) : null; },
