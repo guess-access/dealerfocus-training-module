@@ -232,16 +232,18 @@
   }
 
   function guardHTML() {
-    // Login is the entry pass: everything except the public landing pages requires a session.
+    // Entire site is private: every page requires an active login session.
+    // Only login.html itself is public (otherwise nobody could sign in).
     var me = currentUser();
     var file = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+    if (file === "" ) file = "index.html";
     var adminPages = ["admin-dashboard.html", "admin.html"];
-    var userPages = ["user-dashboard.html", "dashboard.html", "my-progress.html"];
-    var publicPages = ["", "index.html", "about-us.html", "login.html"];
-    if (adminPages.indexOf(file) >= 0 && (!me || me.role !== "admin")) { location.href = "login.html?next=" + encodeURIComponent(file); return; }
-    if (userPages.indexOf(file) >= 0 && !me) { location.href = "login.html?next=" + encodeURIComponent(file); return; }
-    if (publicPages.indexOf(file) >= 0) return; // Home / About / Login stay public
-    if (!me) { location.href = "login.html?next=" + encodeURIComponent(file); return; } // modules, sandbox, trainings, certification
+    if (file === "login.html") {
+      if (me) { var n = new URLSearchParams(location.search).get("next"); location.href = n || (me.role === "admin" ? "admin-dashboard.html" : "user-dashboard.html"); }
+      return;
+    }
+    if (!me) { location.href = "login.html?next=" + encodeURIComponent(file); return; }
+    if (adminPages.indexOf(file) >= 0 && me.role !== "admin") { location.href = "user-dashboard.html"; return; }
   }
 
   function navHTML() {
