@@ -247,20 +247,25 @@
   }
 
   function navHTML() {
+    // Keep the original training-module nav identical on every page;
+    // auth.js only appends the session link (Login / Dashboard + Logout).
     var me = currentUser();
-    var links = '<a href="index.html">Home</a><a href="modules.html">Modules</a><a href="sandbox.html">Sandbox</a><a href="about-us.html">About Us</a>';
-    if (!me) links += '<a href="login.html" style="font-weight:800">Login</a>';
-    else if (me.role === "admin") links += '<a href="admin-dashboard.html" style="font-weight:800">Admin</a><a href="#" id="dfLogout">Logout (' + esc(me.name.split(" ")[0]) + ')</a>';
-    else links += '<a href="user-dashboard.html" style="font-weight:800">My Progress</a><a href="#" id="dfLogout">Logout (' + esc(me.name.split(" ")[0]) + ')</a>';
-    return links;
+    if (!me) return '<a href="login.html" style="font-weight:800">Login</a>';
+    var dash = me.role === "admin" ? "admin-dashboard.html" : "user-dashboard.html";
+    var label = me.role === "admin" ? "Admin" : "My Progress";
+    return '<a href="' + dash + '" style="font-weight:800">' + label + '</a>' +
+      '<a href="#" id="dfLogout">Logout (' + esc(String(me.name).split(" ")[0]) + ')</a>';
   }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
   function injectNav() {
     try {
       var nav = document.querySelector("nav.site-nav");
-      if (nav) {
-        nav.innerHTML = navHTML();
+      if (nav && !document.getElementById("dfAuthLink") && !document.getElementById("dfLogout")) {
+        var span = document.createElement("span");
+        span.id = "dfAuthLink";
+        span.innerHTML = navHTML();
+        nav.appendChild(span);
         var lo = document.getElementById("dfLogout");
         if (lo) lo.addEventListener("click", function (e) { e.preventDefault(); logout(); });
       }
